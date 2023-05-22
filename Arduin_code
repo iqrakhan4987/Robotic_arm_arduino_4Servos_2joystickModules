@@ -1,0 +1,167 @@
+#include <Servo.h>
+
+
+// Create servo objects
+Servo myservo1; // Body rotation motor
+Servo myservo2; //Lower arm motor
+Servo myservo3; // Upper arm motor
+Servo myservo4; // Claw motor
+
+
+// initial positions for each servo
+int pos1 = 90;
+int pos2 = 90;
+int pos3 = 90;
+int pos4 = 90;
+
+
+// Pins for the joystick
+const int right_X = A2;
+const int right_Y = A5;
+const int left_X = A3;
+const int left_Y = A4;
+
+
+// To store joystick readings
+int x1, y1;
+int x2, y2;
+
+
+void setup() {
+
+
+  // Pins that the servo is attached to
+  myservo1.attach(3);
+  myservo2.attach(5);
+  myservo3.attach(6);
+  myservo4.attach(9);
+
+
+// setting joystick as input
+  pinMode(right_X, INPUT);
+  pinMode(right_Y, INPUT);
+  pinMode(left_X, INPUT);
+  pinMode(left_Y, INPUT);
+
+
+}
+
+
+void loop() {
+
+
+  // Reading joystick values and storing it in the variables.
+  x2 = analogRead(right_X);
+  y2 = analogRead(right_Y);
+  x1 = analogRead(left_X);
+  y1 = analogRead(left_Y);
+// Calling the functions that control each motor.
+
+
+  claw();
+  turn();
+  upper_arm();
+  lower_arm();
+}
+
+
+void claw() {
+ 
+  if (x1 < 50) { // Horizontal for joystick 1
+    pos4 += 3;  // Increment claw position by 3
+    myservo4.write(pos4);  // change claw position to new position
+    delay(5);  // wait for 5ms.
+
+
+    if (pos4 > 120) {
+      pos4 = 120;  // maximum angle for claw
+    }
+  }
+
+
+  if (x1 > 1000) {
+    pos4 -= 3; // decrement claw position by 3
+    myservo4.write(pos4);
+    delay(5);
+
+
+  }
+}
+
+
+void turn() {
+  if (x2 < 50) { //Horizontal for joystick 2
+    pos1 += 3;  // Increment position by 3. , whole arm rotates
+    myservo1.write(pos1);
+    delay(50);
+
+
+    if (pos1 > 180) {
+      pos1 = 180;
+    }
+  }
+
+
+  if (x2 > 1000) {
+    pos1 -= 3;
+    myservo1.write(pos1);
+    delay(50);
+
+
+    if (pos1 < 1) {
+      pos1 = 1;
+    }
+  }
+}
+
+
+void upper_arm() {
+  if (y1 < 50) { // Vertical for joystick 1
+    pos3 -= 2;
+    myservo3.write(pos3);
+    delay(25);
+
+
+    if (pos3 < 1) {
+      pos3 = 1;
+    }
+  }
+
+
+  if (y1 > 1000) {
+    pos3 += 2;
+    myservo3.write(pos3);
+    delay(25);
+
+
+    if (pos3 > 135) { // limiting angle of motor to 135 degrees.
+      pos3 = 135;
+    }
+  }
+}
+void lower_arm() {
+  if (y2 > 1000) { // Vertical for joystick 2
+    pos2 -= 2;
+    myservo2.write(pos2);
+    delay(25);
+
+
+    if (pos2 < 35) {
+      pos2 = 35; // limiting angle to 25 degrees
+    }
+  }
+
+
+  if (y2 < 50) {
+    pos2 += 2;
+    myservo2.write(pos2);
+    delay(25);
+
+
+    if (pos2 > 180) {
+      pos2 = 180; // limiting angle to 180 degrees
+    }
+  }
+}
+
+
